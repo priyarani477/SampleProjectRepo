@@ -1,20 +1,39 @@
-
-pipeline {
+pipeline{
 
  
 agent any
 
  
+tools{
+
+ 
+maven 'Maven'
+}
+
+
+ environment {
+    registry = "priyachaudhary477/docker_477"
+    registryCredential = 'Docker'
+}
+
+ 
+
+
+ 
 stages {
 
  
-stage('One') {
+stage("Code Checkout") {
 
  
 steps {
 
  
-echo 'Hi, This is Prakhar..'
+git branch: 'master',
+
+ 
+url: 'https://github.com/priyarani477/SampleJUnitTest.git'
+
 
  
 }
@@ -23,58 +42,70 @@ echo 'Hi, This is Prakhar..'
 }
 
  
-stage('Two') {
+stage('Build Stage')
 
  
-steps {
-
- 
-input('Do you want to proceed?')
-
- 
-}
-
- 
-}
-
- 
-stage('Three') {
-
- 
-when{
-
- 
-not{
-
- 
-branch "master"
-
- 
-}
-
- 
-}
-
- 
-steps {
-
- 
-echo 'Hello...'
-
- 
-}
-
- 
-}
-
- 
-stage('SonarQube analysis'){
+{
 
  
 steps{
 
  
-withSonarQubeEnv('sonar_qube'){
+bat 'mvn package'
+
+ 
+}
+
+ 
+}
+
+ 
+stage('Compile Stage')
+
+ 
+{
+
+ 
+steps{
+
+ 
+bat 'mvn clean compile'
+
+ 
+}
+
+ 
+}
+
+ 
+stage('Testing Stage')
+
+ 
+{
+
+ 
+steps{
+
+ 
+bat 'mvn test'
+
+ 
+}
+
+ 
+}
+
+ 
+stage('build && SonarQube analysis')
+
+ 
+{
+
+ 
+steps {
+
+ 
+withSonarQubeEnv('sonar_qube') {
 
  
 bat 'mvn clean package sonar:sonar'
@@ -89,11 +120,43 @@ bat 'mvn clean package sonar:sonar'
 }
 
  
+stage('Deploy artifact')
+{
+steps{
+
+ bat 'mvn deploy'
+
 }
+}
+
+
+stage('Building image') {
+    steps{
+      bat 'docker build -t springmvc .'
+    }
+  }
+  stage('running container') {
+    steps{
+      bat 'docker run -p 80:8080 springmvc:latest'
+    }
+  }
+  
+  stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+          }
+        }
+      }
+      }
+  
+    
+    
+
+
+
 
  
 }
-
-
-
-
+}
