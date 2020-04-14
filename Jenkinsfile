@@ -146,7 +146,7 @@ stage('Building image') {
         bat 'docker tag springmvc:latest priyachaudhary477/docker_477'
        bat 'docker push priyachaudhary477/docker_477'
        
-        }
+        
       }
       }
   
