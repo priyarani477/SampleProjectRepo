@@ -32,7 +32,7 @@ steps {
 git branch: 'master',
 
  
-url: 'https://github.com/priyarani477/SampleJUnitTest.git'
+url: 'https://github.com/priyarani477/SampleProjectRepo.git'
 
 
  
